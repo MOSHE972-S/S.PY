@@ -1,26 +1,34 @@
-name: Build EXE
-on: [push] # בכל פעם שתעלה עדכון לקוד, הוא יבנה EXE חדש
+name: Build IronClad EXE
+
+on: 
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: 
 
 jobs:
   build:
-    runs-on: windows-latest # המחשב של מיקרוסופט בענן
+    runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # משתמשים בגרסה היציבה ביותר לקימפול
+          python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install customtkinter cryptography nuitka zstandard
 
       - name: Build EXE with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --enable-plugin=tk-inter --windows-console-mode=disable --include-package=customtkinter s.py
+          python -m nuitka --standalone --onefile --enable-plugin=tk-inter --windows-console-mode=disable --include-package=customtkinter --include-package=cryptography --include-package-data=cryptography --output-filename=IronClad_Vault s.py
 
-      - name: Upload EXE
+      - name: Upload Finished EXE
         uses: actions/upload-artifact@v4
         with:
-          name: InvestmentCalculator
-          path: s.exe
+          name: IronClad_Hebrew_Edition
+          path: IronClad_Vault.exe
