@@ -25,7 +25,7 @@ jobs:
 
       - name: Build EXE with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --enable-plugin=tk-inter --windows-console-mode=disable --include-package=customtkinter --include-package=cryptography --include-package-data=cryptography --output-filename=IronClad_Vault s.py
+          python -m nuitka --standalone --onefile --enable-plugin=tk-inter --windows-console-mode=disable --include-package=customtkinter --include-package=cryptography --include-package-data=cryptography --assume-yes-for-downloads --output-filename=IronClad_Vault s.py
 
       - name: Upload Finished EXE
         uses: actions/upload-artifact@v4
