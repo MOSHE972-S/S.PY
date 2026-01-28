@@ -1,0 +1,26 @@
+name: Build EXE
+on: [push] # בכל פעם שתעלה עדכון לקוד, הוא יבנה EXE חדש
+
+jobs:
+  build:
+    runs-on: windows-latest # המחשב של מיקרוסופט בענן
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' # משתמשים בגרסה היציבה ביותר לקימפול
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build EXE with Nuitka
+        run: |
+          python -m nuitka --standalone --onefile --enable-plugin=tk-inter --windows-console-mode=disable --include-package=customtkinter s.py
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: InvestmentCalculator
+          path: s.exe
