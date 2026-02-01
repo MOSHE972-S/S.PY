@@ -1,0 +1,41 @@
+name: Build IronClad Encryptor
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' 
+        cache: 'pip'
+
+    # שלב ההתקנות - הותאם במיוחד לקוד שלך
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install nuitka zstandard
+        
+        # התקנת הספריות שהקוד שלך דורש:
+        pip install cryptography customtkinter packaging
+
+    # שלב הקימפול - הותאם לגרפיקה (GUI)
+    - name: Compile s.py with Nuitka
+      run: |
+        python -m nuitka --onefile --standalone --lto=yes --assume-yes-for-downloads --windows-console-mode=disable --enable-plugin=tk-inter --include-package=customtkinter --output-dir=dist s.py
+
+    - name: Upload EXE Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: IronClad_App
+        path: dist/s.exe
+        retention-days: 5
